@@ -2,9 +2,19 @@
 A webcapture tool built to generate screenshots of a large number of sites at once.
 This program is optimised for use on Windows 11 systems.
 
-Please note: Screenshots will be saved in the same directory that the script is executed from.
-
 # Dependencies
 This program requires the following dependencies:
 - [Geckodriver 0.34.0](https://github.com/mozilla/geckodriver/releases/tag/v0.34.0)
 - [Selenium](https://github.com/SeleniumHQ/selenium)
+
+# How to Use this Program
+This program automates capturing screenshots of websites. It utilised GeckoDriver and Selenium to automate this process.
+
+To install Selenium, you can use ``pip install -U selenium``.
+
+Geckodriver should be downloaded from the Geckodriver github repository (found above) and the executable placed in the same directory as the python script.
+
+This program requires a CSV document containing the URLs of all sites to be screenshotted.
+It will save screenshots in the same directory as the script, using the URLs as the file names.
+
+Any unreachable sites will be recorded in a text document named unreachable_sites.txt
