@@ -9,7 +9,7 @@ from selenium.common.exceptions import TimeoutException
 
 # Path to the geckodriver executable
 # To adjust file location, change the GECKODRIVER_PATH variable below to the file path
-GECKODRIVER_PATH = 'C:\\Users\\wyatt\\Documents\\ritterProject'
+GECKODRIVER_PATH = 'C:\\Users\\wyatt\\Documents\\ritterproject' #adjust this path to where GECKODRIVER is stored, GeckoDriver 0.34.0 required
 
 # Path to the CSV file
 # To adjust file location, change the CSV_FILE_PATH variable below to the file path
@@ -17,8 +17,8 @@ CSV_FILE_PATH = 'final.csv'
 
 # Create a new Firefox driver instance
 options = Options()
-options.headless = True  # Run Firefox in headless mode (no GUI)
-driver = webdriver.Firefox(options=options)
+options.add_argument("--headless") #run firefox in headless mode (no GUI, leads to better performance)
+driver = webdriver.Firefox(options=options) #removed executable_path=GECKODRIVER_PATH as per selenium 4.6.0
 
 
 # Set the maximum time to wait for a page to load (in seconds)
@@ -34,14 +34,10 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
 
     # Iterate through the URLs
     for row in csv_reader:
-        if len(row) < 1:
-            print("Skipping empty row")
-            continue
-
         url = row[0]
 
         if not url.startswith(('http://', 'https://')):
-            url = 'http://' + url
+            url = 'https://' + url
 
         try:
             parsed_url = urlparse(url)
@@ -55,7 +51,6 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
 
         filename = f'{parsed_url.netloc.replace(":", "_")}.png'
 
-        # Declare and assign the driver instance
         try:
             # Load the webpage with a maximum timeout
             driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
@@ -76,4 +71,3 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
 
 # Quit the driver
 driver.quit()
-
