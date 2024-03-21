@@ -7,7 +7,7 @@ This program requires the following dependencies:
 - [Geckodriver 0.34.0](https://github.com/mozilla/geckodriver/releases/tag/v0.34.0)
 - [Selenium](https://github.com/SeleniumHQ/selenium)
 
-# How to Use this Program
+# How to Use This Program
 This program automates capturing screenshots of websites. It utilised GeckoDriver and Selenium to automate this process.
 
 To install Selenium, you can use ``pip install -U selenium``.
@@ -17,4 +17,6 @@ Geckodriver should be downloaded from the Geckodriver github repository (found a
 This program requires a CSV document containing the URLs of all sites to be screenshotted. 
 It will save screenshots in the same directory as the script, using the URLs as the file names. See final.csv included in the repository for an example implementation.
 
-Any unreachable sites will be recorded in a text document named unreachable_sites.txt
+Any unreachable sites will be recorded in a text document named unreachable_sites.txt.
+
+If you desire the https:// and http:// prefixes on your screenshots, comment out the lines indicated in the code.
