@@ -8,7 +8,7 @@ This program requires the following dependencies:
 - [Selenium](https://github.com/SeleniumHQ/selenium)
 
 # How to Use This Program
-This program automates capturing screenshots of websites. It utilised GeckoDriver and Selenium to automate this process.
+This program automates capturing screenshots of websites. It utilises GeckoDriver and Selenium to automate this process.
 
 To install Selenium, you can use ``pip install -U selenium``.
 
