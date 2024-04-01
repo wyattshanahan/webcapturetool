@@ -1,4 +1,4 @@
-# webcapturetool
+# webcapturetool [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 A webcapture tool built to generate screenshots of a large number of sites at once.
 This program is optimised for use on Windows 11 systems.
 
