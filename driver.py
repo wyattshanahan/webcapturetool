@@ -7,13 +7,12 @@ from selenium.common.exceptions import TimeoutException
 
 
 
-# Path to the geckodriver executable
-# To adjust file location, change the GECKODRIVER_PATH variable below to the file path
-GECKODRIVER_PATH = 'C:\\Users\\wyatt\\Documents\\ritterproject'
-
+# Path to the geckodriver executable - links should be formatted similarly to below on Windows
+#GECKODRIVER_PATH = 'C:\\Users\\usr\\Documents\\webcapture'
+GECKODRIVER_PATH = input("Enter the EXACT path to the directory containing geckodriver: ")
+# if you wish to hardcode a path, replace with a string for the whole path
 # Path to the CSV file
-# To adjust file location, change the CSV_FILE_PATH variable below to the file path
-CSV_FILE_PATH = 'current-web.csv'
+CSV_FILE_PATH = input("Enter the CSV file name: ") #ensure CSV is in same directory as driver
 
 # Create a new Firefox driver instance
 options = Options()
@@ -51,10 +50,6 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
             continue
 
         filename = f'{parsed_url.netloc.replace(":", "_")}.png'
-
-        # COMMENT OUT BELOW SECTION IF YOU WISH TO INCLUDE THESE IN SCREENSHOTS
-        filename = filename.replace("https://","") # remove instances of https:// in file naming scheme
-        filename = filename.replace("http://","") # remove instances of http:// in file naming scheme
 
         try:
             # Load the webpage with a maximum timeout
