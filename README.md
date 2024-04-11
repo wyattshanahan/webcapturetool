@@ -16,6 +16,9 @@ Geckodriver should be downloaded from the Geckodriver github repository (found a
 
 This program requires a CSV document containing the URLs of all sites to be screenshotted. 
 It will save screenshots in the same directory as the script, using the URLs as the file names. See final.csv included in the repository for an example implementation.
+The program will take 2 inputs during execution: the csv file name and the direct path to the directory containing geckodriver.
+
+WINDOWS USERS: Please ensure you give the full file path to the geckodriver executable, such as: ``C:\\Users\\usr\\Documents\\webcapture``
 
 Any unreachable sites will be recorded in a text document named unreachable_sites.txt.
 
