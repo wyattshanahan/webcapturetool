@@ -1,18 +1,20 @@
 import csv
 import os
+from sys import argv # for arguments
 from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import TimeoutException
 
-
-
-# Path to the geckodriver executable - links should be formatted similarly to below on Windows
-#GECKODRIVER_PATH = 'C:\\Users\\usr\\Documents\\webcapture'
-GECKODRIVER_PATH = input("Enter the EXACT path to the directory containing geckodriver: ")
-# if you wish to hardcode a path, replace with a string for the whole path
-# Path to the CSV file
-CSV_FILE_PATH = input("Enter the CSV file name: ") #ensure CSV is in same directory as driver
+# check for arguments
+if len(argv) > 1:
+	if (argv[1] == '-h') or (argv[1] == '-help') or (argv[1] == '--h'):
+		print("Usage: python driver.py <csv file name>")
+		exit()
+	if len(argv) == 2:
+		CSV_FILE_PATH = argv[1] # Path to the CSV file
+else:
+	exit("Error: no arguments provided.")
 
 # Create a new Firefox driver instance
 options = Options()
