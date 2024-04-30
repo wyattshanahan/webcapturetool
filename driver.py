@@ -32,44 +32,52 @@ LOG_FILE = 'unreachable_sites.txt'
 # Read the CSV file
 with open(CSV_FILE_PATH, 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
-    next(csv_reader)  # Skip the header row
+    #next(csv_reader)  # Skip the header row NOTE: currently disabled, will be implemented as an option in a future version
 
     # Iterate through the URLs
     for row in csv_reader:
         url = row[0]
 
-        if not url.startswith(('http://', 'https://')):
+        if not url.startswith(('http://', 'https://')): # append https:// to the URL
             url = 'https://' + url
 
-        try:
+        try: # verify it is parseable
             parsed_url = urlparse(url)
-        except Exception as e:
+        except Exception as e: # if an error occurs during the check, report it occurred and continue
             print(f'Error parsing URL: {url}')
             continue
 
-        if not parsed_url.netloc:
+        if not parsed_url.netloc: # if malformed, print error
             print(f'Malformed URL: {url}')
             continue
 
-        filename = f'{parsed_url.netloc.replace(":", "_")}.png'
+        filename = f'{parsed_url.netloc.replace(":", "_")}.png' # set filename for saving, replacing : with _
 
         try:
             # Load the webpage with a maximum timeout
             driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
             driver.get(url)
-
             # Take a screenshot
             driver.save_screenshot(filename)
-
             print(f'Screenshot saved for {url}')
-        except TimeoutException as e:
-            print(f'Timeout while loading {url}: {str(e)}')
-            with open(LOG_FILE, 'a') as log_file:
-                log_file.write(f'Timeout: {url}\n')
+        # if an exception occurs, try replacing https with http
         except Exception as e:
-            print(f'Error capturing screenshot for {url}: {str(e)}')
-            with open(LOG_FILE, 'a') as log_file:
-                log_file.write(f'Error: {url}\n')
+            try: # try with http, screenshot and report success if successful
+                url = url.replace("https://", "http://")
+                driver.get(url)
+                driver.save_screenshot(filename)
+                print(f'Screenshot saved for {url}')
+            # if page times out, report and log the exception
+            except TimeoutException as e:
+                print(f'Timeout while loading {url}: {str(e)}')
+                with open(LOG_FILE, 'a') as log_file:
+                    log_file.write(f'Timeout: {url}\n')
+            # if page fails to load, report and log the exception
+            except Exception as e:
+                print(f'Error capturing screenshot for {url}: {str(e)}')
+                with open(LOG_FILE, 'a') as log_file:
+                    log_file.write(f'Error: {url}\n')
+
 
 # Quit the driver
 driver.quit()
