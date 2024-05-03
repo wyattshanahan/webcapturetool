@@ -91,8 +91,25 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
                     log_file.write(f'Timeout: {url}\n')
             # if page fails to load, report and log the exception
             except Exception as e:
-                print(f'Error capturing screenshot for {url}: {str(e.msg)}')
-                with open(LOG_FILE, 'a') as log_file:
-                    log_file.write(f'Error: {url}\n')
+                if 'e=nssFailure' in e.msg:
+                    print(f'Error capturing screenshot for {url}: nssFailure')
+                    with open(LOG_FILE, 'a') as log_file:
+                        log_file.write(f'nnsFailure: {url}\n')
+                elif 'e=dnsNotFound' in e.msg:
+                    print(f'Error capturing screenshot for {url}: DNS not found')
+                    with open(LOG_FILE, 'a') as log_file:
+                        log_file.write(f'DNS not found: {url}\n')
+                elif 'e=redirectLoop' in e.msg:
+                    print(f'Error capturing screenshot for {url}: Redirect Loop')
+                    with open(LOG_FILE, 'a') as log_file:
+                        log_file.write(f'Redirect Loop: {url}\n')
+                elif 'e=connectionFailure' in e.msg:
+                    print(f'Error capturing screenshot for {url}: Connection Failed')
+                    with open(LOG_FILE, 'a') as log_file:
+                        log_file.write(f'Connection Failure: {url}\n')
+                else:
+                    print(f'Error capturing screenshot for {url}: {str(e.msg)}')
+                    with open(LOG_FILE, 'a') as log_file:
+                        log_file.write(f'Error: {url}\n')
 # Quit the driver
 driver.quit()
