@@ -83,15 +83,13 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
                 print(f'Screenshot saved for {url}')
             # if page times out, report and log the exception
             except TimeoutException as e:
-                print(f'Timeout while loading {url}: {str(e)}')
+                print(f'Timeout while loading {url}: {str(e.msg)}')
                 with open(LOG_FILE, 'a') as log_file:
                     log_file.write(f'Timeout: {url}\n')
             # if page fails to load, report and log the exception
             except Exception as e:
-                print(f'Error capturing screenshot for {url}: {str(e)}')
+                print(f'Error capturing screenshot for {url}: {str(e.msg)}')
                 with open(LOG_FILE, 'a') as log_file:
                     log_file.write(f'Error: {url}\n')
-
-
 # Quit the driver
 driver.quit()
