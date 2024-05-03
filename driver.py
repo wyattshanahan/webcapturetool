@@ -16,6 +16,20 @@ if len(argv) > 1:
 else:
 	exit("Error: no arguments provided.")
 
+# print upper logo -- all pre-execution checks above here
+if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
+    print("*==========================================================================*")
+    print("|  _    _      _     _____             _                _____           _  |")
+    print("| | |  | |    | |   /  __ \           | |              |_   _|         | | |")
+    print("| | |  | | ___| |__ | /  \/ __ _ _ __ | |_ _   _ _ __ ___| | ___   ___ | | |")
+    print("| | |/\| |/ _ \ '_ \| |    / _` | '_ \| __| | | | '__/ _ \ |/ _ \ / _ \| | |")
+    print("| \  /\  /  __/ |_) | \__/\ (_| | |_) | |_| |_| | | |  __/ | (_) | (_) | | |")
+    print("|  \/  \/ \___|_.__/ \____/\__,_| .__/ \__|\__,_|_|  \___\_/\___/ \___/|_| |")
+    print("|                               | |                                        |")
+    print("|                               |_|                               v2024.04 |")
+    print("*==========================================================================*")
+else: # if too small, print the smaller logo/startmark
+    print("=======================\nWebCaptureTool v2024.04\n=======================")
 # Create a new Firefox driver instance
 options = Options()
 options.headless = True  # Run Firefox in headless mode (no GUI)
