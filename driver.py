@@ -15,7 +15,10 @@ if len(argv) > 1:
 		CSV_FILE_PATH = argv[1] # Path to the CSV file
 else:
 	exit("Error: no arguments provided.")
-
+# check if file exists, if not exit with an error
+if os.path.exists(CSV_FILE_PATH) == False:
+    print("Error: File not found.")
+    exit(1)
 # print upper logo -- all pre-execution checks above here
 if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
     print("*==========================================================================*")
