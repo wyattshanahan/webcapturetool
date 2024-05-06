@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import TimeoutException
+extendReport, extendFileName, skipHead = False, False, False # initialise variables
 
 # check for arguments
 if len(argv) > 1:
@@ -38,7 +39,7 @@ options = Options()
 options.headless = True  # Run Firefox in headless mode (no GUI)
 options.add_argument("--headless")
 driver = webdriver.Firefox(options=options) #removed executable_path=GECKODRIVER_PATH as per selenium 4.6.0
-
+httpW,httpsW,timeout,misc = 0,0,0,0 # initialise counters
 
 # Set the maximum time to wait for a page to load (in seconds)
 PAGE_LOAD_TIMEOUT = 10
@@ -77,6 +78,7 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
             # Take a screenshot
             driver.save_screenshot(filename)
             print(f'Screenshot saved for {url}')
+            httpsW += 1 # increment when success
         # if an exception occurs, try replacing https with http
         except Exception as e:
             try: # try with http, screenshot and report success if successful
@@ -84,13 +86,16 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
                 driver.get(url)
                 driver.save_screenshot(filename)
                 print(f'Screenshot saved for {url}')
+                httpW += 1 # increment when successful
             # if page times out, report and log the exception
             except TimeoutException as e:
                 print(f'Timeout while loading {url}: {str(e.msg)}')
                 with open(LOG_FILE, 'a') as log_file:
                     log_file.write(f'Timeout: {url}\n')
             # if page fails to load, report and log the exception
+                timeout += 1 # increment if timeout
             except Exception as e:
+                misc += 1 # increment if miscellaneous exception
                 if 'e=nssFailure' in e.msg:
                     print(f'Error capturing screenshot for {url}: nssFailure')
                     with open(LOG_FILE, 'a') as log_file:
@@ -113,3 +118,23 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
                         log_file.write(f'Error: {url}\n')
 # Quit the driver
 driver.quit()
+
+print("Execution completed successfully!")
+# print total sites done, total successes, https/http successes, and failures (total and timeout/other)
+print("\n*====================*")
+print(" Final Report        ")
+print("                    ")
+print(f" Total Processed: {httpW+httpsW+timeout+misc}  ")
+print(f" Total Successful: {httpW+httpsW} ")
+print(f" Total Failures: {httpW+httpsW}   ")
+print("*====================*")
+
+# use argument and give extra info if requested
+if (extendReport):
+    print("\n*====================*")
+    print(" Extended Report        ")
+    print(f" HTTPS: {httpsW}")
+    print(f" HTTP: {httpW}")
+    print(f" Timeout: {timeout}")
+    print(f" Other Errors: {misc}")
+    print("*====================*")
