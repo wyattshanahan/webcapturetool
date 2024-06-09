@@ -1,5 +1,5 @@
 # webcapturetool [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/wyattshanahan/webcapturetool/graphs/commit-activity)
-A webcapture tool built to generate screenshots of a large number of sites at once.
+A tool built to capture screenshots of a large number of sites from a csv document.
 This program is optimised for use on Windows 11 systems.
 
 # Dependencies
