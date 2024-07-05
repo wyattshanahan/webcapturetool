@@ -7,42 +7,6 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import TimeoutException
 extendReport, extendFileName, skipHead = False, False, False # initialise variables
 
-# FUNCTION DEFINITIONS - IN ALPHABETICAL ORDER
-def display_logo(): # function to display the logo upon startup
-    if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
-        print("*==========================================================================*")
-        print("|  _    _      _     _____             _                _____           _  |")
-        print("| | |  | |    | |   /  __ \           | |              |_   _|         | | |")
-        print("| | |  | | ___| |__ | /  \/ __ _ _ __ | |_ _   _ _ __ ___| | ___   ___ | | |")
-        print("| | |/\| |/ _ \ '_ \| |    / _` | '_ \| __| | | | '__/ _ \ |/ _ \ / _ \| | |")
-        print("| \  /\  /  __/ |_) | \__/\ (_| | |_) | |_| |_| | | |  __/ | (_) | (_) | | |")
-        print("|  \/  \/ \___|_.__/ \____/\__,_| .__/ \__|\__,_|_|  \___\_/\___/ \___/|_| |")
-        print("|                               | |                                        |")
-        print("|                               |_|                             dev2024.07 |")
-        print("*==========================================================================*")
-    else: # if too small, print the smaller logo/startmark
-        print("=======================\nWebCaptureTool v2024.04\n=======================")
-
-def print_report(http, https, timeout, misc, extendReport):
-    # print total sites done, total successes, https/http successes, and failures (total and timeout/other)
-    print("\n*====================*")
-    print(" Final Report        ")
-    print(f"\n Total Processed: {http+https+timeout+misc}  ")
-    print(f" Total Successful: {http+https} ")
-    print(f" Total Failures: {http+https}   ")
-    print("*====================*")
-    if (extendReport): #if extendReport is true, then print out detailed stats
-        print("\n*====================*")
-        print(" Extended Report        ")
-        print(f" HTTPS: {https}")
-        print(f" HTTP: {http}")
-        print(f" Timeout: {timeout}")
-        print(f" Other Errors: {misc}")
-        print("*====================*")
-
-
-# MAIN CODE BELOW
-
 # check for arguments
 if len(argv) > 1:
 	if (argv[1] == '-h') or (argv[1] == '-help') or (argv[1] == '--h'):
@@ -56,14 +20,26 @@ else:
 if os.path.exists(CSV_FILE_PATH) == False:
     print("Error: File not found.")
     exit(1)
-
-display_logo() #output the logo
+# print upper logo -- all pre-execution checks above here
+if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
+    print("*==========================================================================*")
+    print("|  _    _      _     _____             _                _____           _  |")
+    print("| | |  | |    | |   /  __ \           | |              |_   _|         | | |")
+    print("| | |  | | ___| |__ | /  \/ __ _ _ __ | |_ _   _ _ __ ___| | ___   ___ | | |")
+    print("| | |/\| |/ _ \ '_ \| |    / _` | '_ \| __| | | | '__/ _ \ |/ _ \ / _ \| | |")
+    print("| \  /\  /  __/ |_) | \__/\ (_| | |_) | |_| |_| | | |  __/ | (_) | (_) | | |")
+    print("|  \/  \/ \___|_.__/ \____/\__,_| .__/ \__|\__,_|_|  \___\_/\___/ \___/|_| |")
+    print("|                               | |                                        |")
+    print("|                               |_|                               v2024.04 |")
+    print("*==========================================================================*")
+else: # if too small, print the smaller logo/startmark
+    print("=======================\nWebCaptureTool v2024.04\n=======================")
 # Create a new Firefox driver instance
 options = Options()
 options.headless = True  # Run Firefox in headless mode (no GUI)
 options.add_argument("--headless")
 driver = webdriver.Firefox(options=options) #removed executable_path=GECKODRIVER_PATH as per selenium 4.6.0
-http,https,timeout,misc = 0,0,0,0 # initialise counters
+httpW,httpsW,timeout,misc = 0,0,0,0 # initialise counters
 
 # Set the maximum time to wait for a page to load (in seconds)
 PAGE_LOAD_TIMEOUT = 10
@@ -102,7 +78,7 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
             # Take a screenshot
             driver.save_screenshot(filename)
             print(f'Screenshot saved for {url}')
-            https += 1 # increment when success
+            httpsW += 1 # increment when success
         # if an exception occurs, try replacing https with http
         except Exception as e:
             try: # try with http, screenshot and report success if successful
@@ -110,7 +86,7 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
                 driver.get(url)
                 driver.save_screenshot(filename)
                 print(f'Screenshot saved for {url}')
-                http += 1 # increment when successful
+                httpW += 1 # increment when successful
             # if page times out, report and log the exception
             except TimeoutException as e:
                 print(f'Timeout while loading {url}: {str(e.msg)}')
@@ -144,9 +120,21 @@ with open(CSV_FILE_PATH, 'r') as csv_file:
 driver.quit()
 
 print("Execution completed successfully!")
-print_report(http,https,timeout,misc,extendReport)
-if (os.path.exists("./test")!=True):
-    os.mkdir("./test")
-    print("made directory")
-else:
-    print("directory already exists")
+# print total sites done, total successes, https/http successes, and failures (total and timeout/other)
+print("\n*====================*")
+print(" Final Report        ")
+print("                    ")
+print(f" Total Processed: {httpW+httpsW+timeout+misc}  ")
+print(f" Total Successful: {httpW+httpsW} ")
+print(f" Total Failures: {httpW+httpsW}   ")
+print("*====================*")
+
+# use argument and give extra info if requested
+if (extendReport):
+    print("\n*====================*")
+    print(" Extended Report        ")
+    print(f" HTTPS: {httpsW}")
+    print(f" HTTP: {httpW}")
+    print(f" Timeout: {timeout}")
+    print(f" Other Errors: {misc}")
+    print("*====================*")
