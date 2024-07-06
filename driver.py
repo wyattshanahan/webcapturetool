@@ -126,7 +126,7 @@ print(" Final Report        ")
 print("                    ")
 print(f" Total Processed: {httpW+httpsW+timeout+misc}  ")
 print(f" Total Successful: {httpW+httpsW} ")
-print(f" Total Failures: {httpW+httpsW}   ")
+print(f" Total Failures: {timeout+misc}   ")
 print("*====================*")
 
 # use argument and give extra info if requested
