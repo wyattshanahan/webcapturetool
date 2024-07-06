@@ -7,7 +7,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import TimeoutException
 extendReport, extendFileName, skipHead = False, False, False # initialise variables
 
-# FUNCTION DEFINITIONS - IN ALPHABETICAL ORDER
+#FUNCTION DEFINITIONS - IN ALPHABETICAL ORDER
 def display_logo(): # function to display the logo upon startup
     if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
         print("*==========================================================================*")
@@ -20,6 +20,7 @@ def display_logo(): # function to display the logo upon startup
         print("|                               | |                                        |")
         print("|                               |_|                             dev2024.07 |")
         print("*==========================================================================*")
+        return 0
     else: # if too small, print the smaller logo/startmark
         print("=======================\nWebCaptureTool v2024.04\n=======================")
 
@@ -29,7 +30,7 @@ def print_report(http, https, timeout, misc, extendReport):
     print(" Final Report        ")
     print(f"\n Total Processed: {http+https+timeout+misc}  ")
     print(f" Total Successful: {http+https} ")
-    print(f" Total Failures: {http+https}   ")
+    print(f" Total Failures: {timeout+misc}   ")
     print("*====================*")
     if (extendReport): #if extendReport is true, then print out detailed stats
         print("\n*====================*")
@@ -40,113 +41,116 @@ def print_report(http, https, timeout, misc, extendReport):
         print(f" Other Errors: {misc}")
         print("*====================*")
 
+def main(argv):
+    #MAIN CODE BELOW
+    CSV_FILE_PATH = "./"
+    # check for arguments
+    if len(argv) > 1:
+        if (argv[1] == '-h') or (argv[1] == '-help') or (argv[1] == '--h'):
+            print("Usage: python driver.py <csv file name>")
+            exit()
+        if len(argv) == 2:
+            CSV_FILE_PATH = argv[1] # Path to the CSV file
+    else:
+        exit("Error: no arguments provided.")
+    # check if file exists, if not exit with an error
+    if os.path.exists(CSV_FILE_PATH) == False:
+        print("Error: File not found.")
+        exit(1)
 
-# MAIN CODE BELOW
+    display_logo() #output the logo
+    # Create a new Firefox driver instance
+    options = Options()
+    options.headless = True  # Run Firefox in headless mode (no GUI)
+    options.add_argument("--headless")
+    driver = webdriver.Firefox(options=options) #removed executable_path=GECKODRIVER_PATH as per selenium 4.6.0
+    http,https,timeout,misc = 0,0,0,0 # initialise counters
 
-# check for arguments
-if len(argv) > 1:
-	if (argv[1] == '-h') or (argv[1] == '-help') or (argv[1] == '--h'):
-		print("Usage: python driver.py <csv file name>")
-		exit()
-	if len(argv) == 2:
-		CSV_FILE_PATH = argv[1] # Path to the CSV file
-else:
-	exit("Error: no arguments provided.")
-# check if file exists, if not exit with an error
-if os.path.exists(CSV_FILE_PATH) == False:
-    print("Error: File not found.")
-    exit(1)
+    # Set the maximum time to wait for a page to load (in seconds)
+    PAGE_LOAD_TIMEOUT = 10
 
-display_logo() #output the logo
-# Create a new Firefox driver instance
-options = Options()
-options.headless = True  # Run Firefox in headless mode (no GUI)
-options.add_argument("--headless")
-driver = webdriver.Firefox(options=options) #removed executable_path=GECKODRIVER_PATH as per selenium 4.6.0
-http,https,timeout,misc = 0,0,0,0 # initialise counters
+    # File to log unreachable sites
+    LOG_FILE = 'unreachable_sites.txt'
 
-# Set the maximum time to wait for a page to load (in seconds)
-PAGE_LOAD_TIMEOUT = 10
+    # Read the CSV file
+    with open(CSV_FILE_PATH, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        #next(csv_reader)  # Skip the header row NOTE: currently disabled, will be implemented as an option in a future version
 
-# File to log unreachable sites
-LOG_FILE = 'unreachable_sites.txt'
+        # Iterate through the URLs
+        for row in csv_reader:
+            url = row[0]
 
-# Read the CSV file
-with open(CSV_FILE_PATH, 'r') as csv_file:
-    csv_reader = csv.reader(csv_file)
-    #next(csv_reader)  # Skip the header row NOTE: currently disabled, will be implemented as an option in a future version
+            if not url.startswith(('http://', 'https://')): # append https:// to the URL
+                url = 'https://' + url
 
-    # Iterate through the URLs
-    for row in csv_reader:
-        url = row[0]
+            try: # verify it is parseable
+                parsed_url = urlparse(url)
+            except Exception as e: # if an error occurs during the check, report it occurred and continue
+                print(f'Error parsing URL: {url}')
+                continue
 
-        if not url.startswith(('http://', 'https://')): # append https:// to the URL
-            url = 'https://' + url
+            if not parsed_url.netloc: # if malformed, print error
+                print(f'Malformed URL: {url}')
+                continue
 
-        try: # verify it is parseable
-            parsed_url = urlparse(url)
-        except Exception as e: # if an error occurs during the check, report it occurred and continue
-            print(f'Error parsing URL: {url}')
-            continue
+            filename = f'{parsed_url.netloc.replace(":", "_")}.png' # set filename for saving, replacing : with _
 
-        if not parsed_url.netloc: # if malformed, print error
-            print(f'Malformed URL: {url}')
-            continue
-
-        filename = f'{parsed_url.netloc.replace(":", "_")}.png' # set filename for saving, replacing : with _
-
-        try:
-            # Load the webpage with a maximum timeout
-            driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
-            driver.get(url)
-            # Take a screenshot
-            driver.save_screenshot(filename)
-            print(f'Screenshot saved for {url}')
-            https += 1 # increment when success
-        # if an exception occurs, try replacing https with http
-        except Exception as e:
-            try: # try with http, screenshot and report success if successful
-                url = url.replace("https://", "http://")
+            try:
+                # Load the webpage with a maximum timeout
+                driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
                 driver.get(url)
+                # Take a screenshot
                 driver.save_screenshot(filename)
                 print(f'Screenshot saved for {url}')
-                http += 1 # increment when successful
-            # if page times out, report and log the exception
-            except TimeoutException as e:
-                print(f'Timeout while loading {url}: {str(e.msg)}')
-                with open(LOG_FILE, 'a') as log_file:
-                    log_file.write(f'Timeout: {url}\n')
-            # if page fails to load, report and log the exception
-                timeout += 1 # increment if timeout
+                https += 1 # increment when success
+            # if an exception occurs, try replacing https with http
             except Exception as e:
-                misc += 1 # increment if miscellaneous exception
-                if 'e=nssFailure' in e.msg:
-                    print(f'Error capturing screenshot for {url}: nssFailure')
+                try: # try with http, screenshot and report success if successful
+                    url = url.replace("https://", "http://")
+                    driver.get(url)
+                    driver.save_screenshot(filename)
+                    print(f'Screenshot saved for {url}')
+                    http += 1 # increment when successful
+                # if page times out, report and log the exception
+                except TimeoutException as e:
+                    print(f'Timeout while loading {url}: {str(e.msg)}')
                     with open(LOG_FILE, 'a') as log_file:
-                        log_file.write(f'nnsFailure: {url}\n')
-                elif 'e=dnsNotFound' in e.msg:
-                    print(f'Error capturing screenshot for {url}: DNS not found')
-                    with open(LOG_FILE, 'a') as log_file:
-                        log_file.write(f'DNS not found: {url}\n')
-                elif 'e=redirectLoop' in e.msg:
-                    print(f'Error capturing screenshot for {url}: Redirect Loop')
-                    with open(LOG_FILE, 'a') as log_file:
-                        log_file.write(f'Redirect Loop: {url}\n')
-                elif 'e=connectionFailure' in e.msg:
-                    print(f'Error capturing screenshot for {url}: Connection Failed')
-                    with open(LOG_FILE, 'a') as log_file:
-                        log_file.write(f'Connection Failure: {url}\n')
-                else:
-                    print(f'Error capturing screenshot for {url}: {str(e.msg)}')
-                    with open(LOG_FILE, 'a') as log_file:
-                        log_file.write(f'Error: {url}\n')
-# Quit the driver
-driver.quit()
+                        log_file.write(f'Timeout: {url}\n')
+                # if page fails to load, report and log the exception
+                    timeout += 1 # increment if timeout
+                except Exception as e:
+                    misc += 1 # increment if miscellaneous exception
+                    if 'e=nssFailure' in e.msg:
+                        print(f'Error capturing screenshot for {url}: nssFailure')
+                        with open(LOG_FILE, 'a') as log_file:
+                            log_file.write(f'nnsFailure: {url}\n')
+                    elif 'e=dnsNotFound' in e.msg:
+                        print(f'Error capturing screenshot for {url}: DNS not found')
+                        with open(LOG_FILE, 'a') as log_file:
+                            log_file.write(f'DNS not found: {url}\n')
+                    elif 'e=redirectLoop' in e.msg:
+                        print(f'Error capturing screenshot for {url}: Redirect Loop')
+                        with open(LOG_FILE, 'a') as log_file:
+                            log_file.write(f'Redirect Loop: {url}\n')
+                    elif 'e=connectionFailure' in e.msg:
+                        print(f'Error capturing screenshot for {url}: Connection Failed')
+                        with open(LOG_FILE, 'a') as log_file:
+                            log_file.write(f'Connection Failure: {url}\n')
+                    else:
+                        print(f'Error capturing screenshot for {url}: {str(e.msg)}')
+                        with open(LOG_FILE, 'a') as log_file:
+                            log_file.write(f'Error: {url}\n')
+    # Quit the driver
+    driver.quit()
 
-print("Execution completed successfully!")
-print_report(http,https,timeout,misc,extendReport)
-if (os.path.exists("./test")!=True):
-    os.mkdir("./test")
-    print("made directory")
-else:
-    print("directory already exists")
+    print("Execution completed successfully!")
+    print_report(http,https,timeout,misc,extendReport)
+    if (os.path.exists("./test")!=True):
+        os.mkdir("./test")
+        print("made directory")
+    else:
+        print("directory already exists")
+
+if __name__ == "__main__":
+    main(argv)
