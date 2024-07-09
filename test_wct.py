@@ -1,4 +1,4 @@
-from driver import print_report, build_file_name
+from driver import print_report, build_dir_name
 import datetime
 
 # THIS DOCUMENT CONTAINS AUTOMATED UNIT TESTS. IT IS NOT REQUIRED FOR THE EXECUTION OF THE WEBCAPTURETOOL.
@@ -14,8 +14,8 @@ def test_print_report(capsys):
 
 
 # test that build_file_name is constructing and returning the file name as intended using datetime and string formatting
-def test_build_file_name():
+def test_build_dir_name():
     current_time = datetime.datetime.now()
-    function_result = build_file_name()
+    function_result = build_dir_name()
     comparison_value = "./" + current_time.strftime("%Y%m%d_%H%M%S") + "_screenshots"
     assert function_result == comparison_value

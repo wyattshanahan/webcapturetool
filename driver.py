@@ -10,11 +10,11 @@ extendReport, extendFileName, skipHead = False, False, False # initialise variab
 
 #FUNCTION DEFINITIONS - IN ALPHABETICAL ORDER
 
-def build_file_name():
+def build_dir_name():
     current_time = datetime.datetime.now()
     formatted_date = current_time.strftime("%Y%m%d_%H%M%S")
-    file_name = "./" + formatted_date + "_screenshots"
-    return file_name
+    dir_name = "./" + formatted_date + "_screenshots"
+    return dir_name
 def display_logo(): # function to display the logo upon startup
     if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
         print("*==========================================================================*")
