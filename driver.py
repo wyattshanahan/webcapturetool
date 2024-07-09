@@ -5,9 +5,16 @@ from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import TimeoutException
+import datetime
 extendReport, extendFileName, skipHead = False, False, False # initialise variables
 
 #FUNCTION DEFINITIONS - IN ALPHABETICAL ORDER
+
+def build_file_name():
+    current_time = datetime.datetime.now()
+    formatted_date = current_time.strftime("%Y%m%d_%H%M%S")
+    file_name = "./" + formatted_date + "_screenshots"
+    return file_name
 def display_logo(): # function to display the logo upon startup
     if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
         print("*==========================================================================*")
@@ -146,11 +153,11 @@ def main(argv):
 
     print("Execution completed successfully!")
     print_report(http,https,timeout,misc,extendReport)
-    if (os.path.exists("./test")!=True):
-        os.mkdir("./test")
-        print("made directory")
-    else:
-        print("directory already exists")
+    # if (os.path.exists("./test")!=True):
+    #    os.mkdir("./test")
+    #    print("made directory")
+    #else:
+    #    print("directory already exists")
 
 if __name__ == "__main__":
     main(argv)
