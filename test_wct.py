@@ -1,6 +1,8 @@
-from driver import print_report, build_dir_name, process_default_args
+from driver import print_report, build_dir_name, process_default_args, make_dir
 import datetime
 import pytest
+import os
+import shutil
 
 # THIS DOCUMENT CONTAINS AUTOMATED UNIT TESTS. IT IS NOT REQUIRED FOR THE EXECUTION OF THE WEBCAPTURETOOL.
 
@@ -46,3 +48,24 @@ def test_process_default_args_help(): # verify that -h help flag is detected suc
     with pytest.raises(SystemExit) as exc_info:
         process_default_args(argv)
     assert exc_info.value.code == "Usage: python driver.py <csv file name>"
+
+def test_make_dir_success(): # verify directory created successfully
+    name = build_dir_name()
+    status = make_dir(name)
+    status = (status == 0) and (os.path.exists(name))
+    if os.path.exists(name): # cleanup
+        shutil.rmtree(name)
+    else:
+        assert False
+    assert (status)
+
+def test_make_dir_fail():
+    name = build_dir_name()
+    make_dir(name) # make dir, then try and make again to verify name conflict handled correctly
+    with pytest.raises(SystemExit) as exc_info:
+        make_dir(name)
+    if os.path.exists(name): # cleanup
+        shutil.rmtree(name)
+    else:
+        assert False
+    assert exc_info.value.code == "Error: directory already exists."

@@ -32,6 +32,19 @@ def display_logo(): # function to display the logo upon startup
     else: # if too small, print the smaller logo/startmark
         print("=======================\nWebCaptureTool v2024.04\n=======================")
 
+def make_dir(dir_name):
+    if not os.path.exists(dir_name):
+        os.mkdir(dir_name)
+        return 0
+    else:
+        exit("Error: directory already exists.")
+
+
+# if (os.path.exists("./test")!=True):
+#    os.mkdir("./test")
+#    print("made directory")
+# else:
+#    print("directory already exists")
 def print_report(http, https, timeout, misc, extendReport):
     # print total sites done, total successes, https/http successes, and failures (total and timeout/other)
     print("\n*====================*")
