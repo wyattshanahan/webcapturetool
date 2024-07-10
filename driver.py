@@ -15,6 +15,7 @@ def build_dir_name():
     formatted_date = current_time.strftime("%Y%m%d_%H%M%S")
     dir_name = "./" + formatted_date + "_screenshots"
     return dir_name
+
 def display_logo(): # function to display the logo upon startup
     if os.get_terminal_size()[0] >= 76: # if terminal is wide enough, print the fullsize logo
         print("*==========================================================================*")
@@ -48,22 +49,22 @@ def print_report(http, https, timeout, misc, extendReport):
         print(f" Other Errors: {misc}")
         print("*====================*")
 
-def main(argv):
-    #MAIN CODE BELOW
-    CSV_FILE_PATH = "./"
-    # check for arguments
+def process_default_args(argv):
     if len(argv) > 1:
         if (argv[1] == '-h') or (argv[1] == '-help') or (argv[1] == '--h'):
-            print("Usage: python driver.py <csv file name>")
-            exit()
+            exit("Usage: python driver.py <csv file name>")
         if len(argv) == 2:
-            CSV_FILE_PATH = argv[1] # Path to the CSV file
-    else:
+            if os.path.exists(argv[1]) == False: # check if file exists, exit if not else return the file path
+                exit("Error: file not found.")
+            else:
+                return argv[1] # Path to the CSV file
+    else: # exit if no args provided
         exit("Error: no arguments provided.")
-    # check if file exists, if not exit with an error
-    if os.path.exists(CSV_FILE_PATH) == False:
-        print("Error: File not found.")
-        exit(1)
+
+def driver(argv):
+    #MAIN CODE BELOW
+    # set CSV_FILE_PATH using process_default_args to check for valid CSV argument
+    CSV_FILE_PATH = process_default_args(argv)
 
     display_logo() #output the logo
     # Create a new Firefox driver instance
@@ -77,7 +78,7 @@ def main(argv):
     PAGE_LOAD_TIMEOUT = 10
 
     # File to log unreachable sites
-    LOG_FILE = 'unreachable_sites.txt'
+    LOG_FILE = './test/unreachable_sites.txt'  # this will need to be built to prepend the dir name rather than test
 
     # Read the CSV file
     with open(CSV_FILE_PATH, 'r') as csv_file:
@@ -102,7 +103,7 @@ def main(argv):
                 continue
 
             filename = f'{parsed_url.netloc.replace(":", "_")}.png' # set filename for saving, replacing : with _
-
+            filename = "./test/" + filename # prepend screenshot directory name here to save files in the correct directory
             try:
                 # Load the webpage with a maximum timeout
                 driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
@@ -160,4 +161,4 @@ def main(argv):
     #    print("directory already exists")
 
 if __name__ == "__main__":
-    main(argv)
+    driver(argv)
