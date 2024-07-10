@@ -22,3 +22,9 @@ The program will take 1 argument, which is the name and path of the csv document
 
 Any unreachable sites will be recorded in a text document named unreachable_sites.txt.
 
+# Update Notes for dev2024.07
+This update adds the following features:
+- Encapsulated functions
+- Automated Unit Testing (via pytest)
+- Automatically seperated screenshots
+- Improved error handling and various bug fixes
