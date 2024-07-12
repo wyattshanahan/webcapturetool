@@ -11,10 +11,17 @@ import shutil
 def test_print_report(capsys):
     print_report(5, 5, 0, 1, False)
     captured = capsys.readouterr()
-    print("out")
-    print(captured.out)
     assert captured.out == '\n*====================*\n Final Report        \n\n Total Processed: 11  \n Total Successful: 10 \n Total Failures: 1   \n*====================*\n'
 
+def test_print_extended(capsys):
+    print_report(5,5,0,1,True)
+    captured = capsys.readouterr()
+    assert captured.out == "\n*====================*\n Final Report        \n\n Total Processed: 11  \n Total Successful: 10 \n Total Failures: 1   \n*====================*\n\n*====================*\n Extended Report        \n HTTPS: 5\n HTTP: 5\n Timeout: 0\n Other Errors: 1\n*====================*\n"
+#E         +  HTTPS: 5
+#E         +  HTTP: 5
+#E         +  Timeout: 0
+#E         +  Other Errors: 1
+#E         + *====================*'
 
 # test that build_file_name is constructing and returning the file name as intended using datetime and string formatting
 def test_build_dir_name():
