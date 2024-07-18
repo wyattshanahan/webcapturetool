@@ -90,8 +90,12 @@ def driver(argv):
     # Set the maximum time to wait for a page to load (in seconds)
     PAGE_LOAD_TIMEOUT = 10
 
+    # create directory for screenshots
+    dir_name = build_dir_name()
+    make_dir(dir_name)
+
     # File to log unreachable sites
-    LOG_FILE = './test/unreachable_sites.txt'  # this will need to be built to prepend the dir name rather than test
+    LOG_FILE = dir_name + '/unreachable_sites.txt'  # this will need to be built to prepend the dir name rather than test
 
     # Read the CSV file
     with open(CSV_FILE_PATH, 'r') as csv_file:
@@ -116,7 +120,7 @@ def driver(argv):
                 continue
 
             filename = f'{parsed_url.netloc.replace(":", "_")}.png' # set filename for saving, replacing : with _
-            filename = "./test/" + filename # prepend screenshot directory name here to save files in the correct directory
+            filename = dir_name + "/" + filename # prepend screenshot directory name here to save files in the correct directory
             try:
                 # Load the webpage with a maximum timeout
                 driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
@@ -167,11 +171,6 @@ def driver(argv):
 
     print("Execution completed successfully!")
     print_report(http,https,timeout,misc,extendReport)
-    # if (os.path.exists("./test")!=True):
-    #    os.mkdir("./test")
-    #    print("made directory")
-    #else:
-    #    print("directory already exists")
 
 if __name__ == "__main__":
     driver(argv)
