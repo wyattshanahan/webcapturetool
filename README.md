@@ -22,3 +22,12 @@ The program will take 1 argument, which is the name and path of the csv document
 
 Any unreachable sites will be recorded in a text document named unreachable_sites.txt.
 
+# Upcoming Features
+
+Want to see upcoming features? Take a look at the dev branch to see work-in-progress developments. 
+
+Some features currently being worked on include:
+- Encapsulation of core functionality
+- Automated unit testing to ensure stability and security
+- Automated seperation of screenshots into a seperate directory
+- Improved documentation
