@@ -24,7 +24,7 @@ Any unreachable sites will be recorded in a text document named unreachable_site
 
 # Update Notes for dev2024.07
 This update adds the following features:
-- Encapsulated functions
-- Automated Unit Testing (via pytest)
+- Encapsulated helper functions
+- Automated Unit Testing (via pytest) for helper functions
 - Automatically seperated screenshots
 - Improved error handling and various bug fixes
