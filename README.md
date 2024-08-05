@@ -28,7 +28,7 @@ This update adds the following features:
 - Automated Unit Testing (via pytest) for helper functions
 - Automatically seperated screenshots
 - Improved error handling and various bug fixes
-=======
+
 # Upcoming Features
 
 Want to see upcoming features? Take a look at the dev branch to see work-in-progress developments. 
