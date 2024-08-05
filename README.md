@@ -36,5 +36,5 @@ Want to see upcoming features? Take a look at the dev branch to see work-in-prog
 Some features currently being worked on include:
 - Encapsulation of core functionality
 - Automated unit testing to ensure stability and security
-- Automated seperation of screenshots into a seperate directory
+- Automated CI pipeline to perform unit testing
 - Improved documentation
