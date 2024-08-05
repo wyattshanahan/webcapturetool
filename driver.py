@@ -26,7 +26,7 @@ def display_logo(): # function to display the logo upon startup
         print("| \  /\  /  __/ |_) | \__/\ (_| | |_) | |_| |_| | | |  __/ | (_) | (_) | | |")
         print("|  \/  \/ \___|_.__/ \____/\__,_| .__/ \__|\__,_|_|  \___\_/\___/ \___/|_| |")
         print("|                               | |                                        |")
-        print("|                               |_|                             dev2024.07 |")
+        print("|                               |_|                             dev2024.08 |")
         print("*==========================================================================*")
         return 0
     else: # if too small, print the smaller logo/startmark
@@ -74,21 +74,45 @@ def process_default_args(argv):
     else: # exit if no args provided
         exit("Error: no arguments provided.")
 
+def process_std_exceptions(LOG_FILE, e, url):
+    if 'e=nssFailure' in e.msg:
+        print(f'Error capturing screenshot for {url}: nssFailure')
+        with open(LOG_FILE, 'a') as log_file:
+            log_file.write(f'nnsFailure: {url}\n')
+        return "nssFailure" # if nssFailure
+    elif 'e=dnsNotFound' in e.msg:
+        print(f'Error capturing screenshot for {url}: DNS not found')
+        with open(LOG_FILE, 'a') as log_file:
+            log_file.write(f'DNS not found: {url}\n')
+        return "dnsNotFound" # if DNS Not Found error
+    elif 'e=redirectLoop' in e.msg:
+        print(f'Error capturing screenshot for {url}: Redirect Loop')
+        with open(LOG_FILE, 'a') as log_file:
+            log_file.write(f'Redirect Loop: {url}\n')
+        return "redirect" # if redirect loop
+    elif 'e=connectionFailure' in e.msg:
+        print(f'Error capturing screenshot for {url}: Connection Failed')
+        with open(LOG_FILE, 'a') as log_file:
+            log_file.write(f'Connection Failure: {url}\n')
+        return "connexionfailure" # if connection failed
+    else:
+        print(f'Error capturing screenshot for {url}: {str(e.msg)}')
+        with open(LOG_FILE, 'a') as log_file:
+            log_file.write(f'Error: {url}\n')
+        return "misc" # return if misc error
+
 def driver(argv):
     #MAIN CODE BELOW
     # set CSV_FILE_PATH using process_default_args to check for valid CSV argument
-    CSV_FILE_PATH = process_default_args(argv)
-
+    CSV_FILE_PATH = process_default_args(argv) # process arguments
     display_logo() #output the logo
-    # Create a new Firefox driver instance
+    # configure options and initialisations
     options = Options()
     options.headless = True  # Run Firefox in headless mode (no GUI)
     options.add_argument("--headless")
     driver = webdriver.Firefox(options=options) #removed executable_path=GECKODRIVER_PATH as per selenium 4.6.0
     http,https,timeout,misc = 0,0,0,0 # initialise counters
-
-    # Set the maximum time to wait for a page to load (in seconds)
-    PAGE_LOAD_TIMEOUT = 10
+    PAGE_LOAD_TIMEOUT = 10 # Set the maximum time to wait for a page to load (in seconds)
 
     # create directory for screenshots
     dir_name = build_dir_name()
@@ -146,31 +170,12 @@ def driver(argv):
                     timeout += 1 # increment if timeout
                 except Exception as e:
                     misc += 1 # increment if miscellaneous exception
-                    if 'e=nssFailure' in e.msg:
-                        print(f'Error capturing screenshot for {url}: nssFailure')
-                        with open(LOG_FILE, 'a') as log_file:
-                            log_file.write(f'nnsFailure: {url}\n')
-                    elif 'e=dnsNotFound' in e.msg:
-                        print(f'Error capturing screenshot for {url}: DNS not found')
-                        with open(LOG_FILE, 'a') as log_file:
-                            log_file.write(f'DNS not found: {url}\n')
-                    elif 'e=redirectLoop' in e.msg:
-                        print(f'Error capturing screenshot for {url}: Redirect Loop')
-                        with open(LOG_FILE, 'a') as log_file:
-                            log_file.write(f'Redirect Loop: {url}\n')
-                    elif 'e=connectionFailure' in e.msg:
-                        print(f'Error capturing screenshot for {url}: Connection Failed')
-                        with open(LOG_FILE, 'a') as log_file:
-                            log_file.write(f'Connection Failure: {url}\n')
-                    else:
-                        print(f'Error capturing screenshot for {url}: {str(e.msg)}')
-                        with open(LOG_FILE, 'a') as log_file:
-                            log_file.write(f'Error: {url}\n')
+                    process_std_exceptions(LOG_FILE, e, url)
     # Quit the driver
     driver.quit()
 
     print("Execution completed successfully!")
-    print_report(http,https,timeout,misc,extendReport)
+    print_report(http,https,timeout,misc,extendReport) #print out the exit report
 
 if __name__ == "__main__":
     driver(argv)
