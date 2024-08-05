@@ -159,6 +159,7 @@ def driver(argv): #MAIN DRIVER FUNCTION
                 https += 1 # increment when success
             # if an exception occurs, try replacing https with http
             except Exception as e:
+                print(type(e))
                 try: # try with http, screenshot and report success if successful
                     url = url.replace("https://", "http://")
                     driver.get(url)

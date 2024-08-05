@@ -3,7 +3,7 @@ import datetime
 import pytest
 import os
 import shutil
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 
 # THIS DOCUMENT CONTAINS AUTOMATED UNIT TESTS. IT IS NOT REQUIRED FOR THE EXECUTION OF THE WEBCAPTURETOOL.
 
@@ -104,4 +104,59 @@ def test_process_default_args_timeout_false(): # test timeout with False as the 
         os.remove(LOG_FILE)
     else:
         assert False # fail test if file not found, since means did not write to output file as needed
+    assert 'misc' == result
+
+def test_process_default_args_nss(): # test nssFailure processing
+    LOG_FILE = './webcapturetesting.txt'
+    e = WebDriverException("e=nssFailure")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url)
+    if os.path.exists(LOG_FILE):
+        os.remove(LOG_FILE)
+    else:
+        assert False
+    assert 'nssFailure' == result
+
+def test_process_default_args_connexion(): # test connectionFailure processing
+    LOG_FILE = './webcapturetesting.txt'
+    e = WebDriverException("e=connectionFailure")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url)
+    if os.path.exists(LOG_FILE):
+        os.remove(LOG_FILE)
+    else:
+        assert False
+    assert 'connexionfailure' == result
+
+def test_process_default_args_dns(): # test DNSnotfound processing
+    LOG_FILE = './webcapturetesting.txt'
+    e = WebDriverException("e=dnsNotFound")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url)
+    if os.path.exists(LOG_FILE):
+        os.remove(LOG_FILE)
+    else:
+        assert False
+    assert 'dnsNotFound' == result
+
+def test_process_default_args_redirect(): # test redirect loop processing
+    LOG_FILE = './webcapturetesting.txt'
+    e = WebDriverException("e=redirectLoop")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url)
+    if os.path.exists(LOG_FILE):
+        os.remove(LOG_FILE)
+    else:
+        assert False
+    assert 'redirect' == result
+
+def test_process_default_args_misc(): # test non categorised processing
+    LOG_FILE = './webcapturetesting.txt'
+    e = WebDriverException("")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url)
+    if os.path.exists(LOG_FILE):
+        os.remove(LOG_FILE)
+    else:
+        assert False
     assert 'misc' == result
