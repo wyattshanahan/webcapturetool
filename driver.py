@@ -74,8 +74,13 @@ def process_default_args(argv):
     else: # exit if no args provided
         exit("Error: no arguments provided.")
 
-def process_std_exceptions(LOG_FILE, e, url):
-    if 'e=nssFailure' in e.msg:
+def process_std_exceptions(LOG_FILE, e, url, timeout=None):
+    if timeout == True: # if timeout error, then process and return timeout
+        print(f'Timeout while loading {url}: {str(e.msg)}')
+        with open(LOG_FILE, 'a') as log_file:
+            log_file.write(f'Timeout: {url}\n')
+        return "timeout" # if timeout error
+    elif 'e=nssFailure' in e.msg:
         print(f'Error capturing screenshot for {url}: nssFailure')
         with open(LOG_FILE, 'a') as log_file:
             log_file.write(f'nnsFailure: {url}\n')
@@ -162,11 +167,8 @@ def driver(argv):
                     print(f'Screenshot saved for {url}')
                     http += 1 # increment when successful
                 # if page times out, report and log the exception
-                except TimeoutException as e:
-                    print(f'Timeout while loading {url}: {str(e.msg)}')
-                    with open(LOG_FILE, 'a') as log_file:
-                        log_file.write(f'Timeout: {url}\n')
-                # if page fails to load, report and log the exception
+                except TimeoutException as e: # if page fails to load, process exception and increment timeout
+                    process_std_exceptions(LOG_FILE, e, url, True) # pass in the optional param for timeout
                     timeout += 1 # increment if timeout
                 except Exception as e:
                     misc += 1 # increment if miscellaneous exception
