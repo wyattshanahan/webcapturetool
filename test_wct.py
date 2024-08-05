@@ -83,3 +83,25 @@ def test_process_default_args_timeout(): # test that timeout is processed succes
     else:
         assert False # fail test if file not found, since means did not write to output file as needed
     assert 'timeout' == result
+
+def test_process_default_args_timeout_nobool(): # test without the timeout boolean
+    LOG_FILE = './webcapturetesting.txt'
+    e = TimeoutException("Test Timeout No Bool")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url)
+    if os.path.exists(LOG_FILE): #cleanup
+        os.remove(LOG_FILE)
+    else:
+        assert False # fail test if file not found, since means did not write to output file as needed
+    assert 'misc' == result
+
+def test_process_default_args_timeout_false(): # test timeout with False as the bool
+    LOG_FILE = './webcapturetesting.txt'
+    e = TimeoutException("Test Timeout False")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url, False)
+    if os.path.exists(LOG_FILE): #cleanup
+        os.remove(LOG_FILE)
+    else:
+        assert False # fail test if file not found, since means did not write to output file as needed
+    assert 'misc' == result

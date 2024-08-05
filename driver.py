@@ -26,7 +26,7 @@ def display_logo(): # function to display the logo upon startup
         print("| \  /\  /  __/ |_) | \__/\ (_| | |_) | |_| |_| | | |  __/ | (_) | (_) | | |")
         print("|  \/  \/ \___|_.__/ \____/\__,_| .__/ \__|\__,_|_|  \___\_/\___/ \___/|_| |")
         print("|                               | |                                        |")
-        print("|                               |_|                             dev2024.08 |")
+        print("|                               |_|                               v2024.08 |")
         print("*==========================================================================*")
         return 0
     else: # if too small, print the smaller logo/startmark
@@ -106,8 +106,7 @@ def process_std_exceptions(LOG_FILE, e, url, timeout=None):
             log_file.write(f'Error: {url}\n')
         return "misc" # return if misc error
 
-def driver(argv):
-    #MAIN CODE BELOW
+def driver(argv): #MAIN DRIVER FUNCTION
     # set CSV_FILE_PATH using process_default_args to check for valid CSV argument
     CSV_FILE_PATH = process_default_args(argv) # process arguments
     display_logo() #output the logo
