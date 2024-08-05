@@ -1,8 +1,9 @@
-from driver import print_report, build_dir_name, process_default_args, make_dir
+from driver import print_report, build_dir_name, process_default_args, make_dir, process_std_exceptions
 import datetime
 import pytest
 import os
 import shutil
+from selenium.common.exceptions import TimeoutException
 
 # THIS DOCUMENT CONTAINS AUTOMATED UNIT TESTS. IT IS NOT REQUIRED FOR THE EXECUTION OF THE WEBCAPTURETOOL.
 
@@ -17,11 +18,6 @@ def test_print_extended(capsys):
     print_report(5,5,0,1,True)
     captured = capsys.readouterr()
     assert captured.out == "\n*====================*\n Final Report        \n\n Total Processed: 11  \n Total Successful: 10 \n Total Failures: 1   \n*====================*\n\n*====================*\n Extended Report        \n HTTPS: 5\n HTTP: 5\n Timeout: 0\n Other Errors: 1\n*====================*\n"
-#E         +  HTTPS: 5
-#E         +  HTTP: 5
-#E         +  Timeout: 0
-#E         +  Other Errors: 1
-#E         + *====================*'
 
 # test that build_file_name is constructing and returning the file name as intended using datetime and string formatting
 def test_build_dir_name():
@@ -76,3 +72,14 @@ def test_make_dir_fail():
     else:
         assert False
     assert exc_info.value.code == "Error: directory already exists."
+
+def test_process_default_args_timeout(): # test that timeout is processed successfully
+    LOG_FILE = './webcapturetesting.txt'
+    e = TimeoutException("Test Timeout")
+    url = "test.com"
+    result = process_std_exceptions(LOG_FILE, e, url, True)
+    if os.path.exists(LOG_FILE): #cleanup
+        os.remove(LOG_FILE)
+    else:
+        assert False # fail test if file not found, since means did not write to output file as needed
+    assert 'timeout' == result
