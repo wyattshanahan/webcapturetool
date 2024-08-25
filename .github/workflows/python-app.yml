@@ -31,11 +31,18 @@ jobs:
         pip install flake8 pytest selenium
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Install Firefox and Geckodriver
+    - name: Install Firefox
       run: |
         sudo apt-get update
         sudo apt-get install -y firefox
-        sudo apt-get install -y geckodriver
+
+    - name: Install Geckodriver
+      run: |
+        GECKODRIVER_VERSION=$(curl -sL https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r ".tag_name")
+        wget "https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
+        tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        sudo mv geckodriver /usr/local/bin/
+        rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
 
     - name: Lint with flake8
       run: |
