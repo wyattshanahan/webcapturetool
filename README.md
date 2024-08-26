@@ -22,12 +22,13 @@ The program will take 1 argument, which is the name and path of the csv document
 
 Any unreachable sites will be recorded in a text document named unreachable_sites.txt.
 
-# Update Notes for dev2024.07
+# Update Notes for dev2024.08
 This update adds the following features:
 - Encapsulated helper functions
 - Automated Unit Testing (via pytest) for helper functions
 - Automatically seperated screenshots
 - Improved error handling and various bug fixes
+- Automated unit testing (via Github Actions) to ensure stability
 
 # Upcoming Features
 
@@ -35,7 +36,7 @@ Want to see upcoming features? Take a look at the dev branch to see work-in-prog
 
 Some features currently being worked on include:
 - Encapsulation of core functionality
-- Automated unit testing to ensure stability and security
+- Additional unit tests to ensure stability and security
 - Automated CI pipeline to perform unit testing
 - Improved documentation
 
