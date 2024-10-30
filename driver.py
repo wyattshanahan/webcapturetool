@@ -70,7 +70,6 @@ def process_default_args(argv):
         exit("Error: no arguments provided.")
 
 def process_std_exceptions(LOG_FILE, e, url, timeout=None):
-    error = ""
     if timeout == True: # if timeout error, then process and return timeout
         print(f'Timeout while loading {url}: {str(e.msg)}')
         with open(LOG_FILE, 'a') as log_file:
