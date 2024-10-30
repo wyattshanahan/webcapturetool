@@ -26,7 +26,7 @@ def display_logo(): # function to display the logo upon startup
         print("| \  /\  /  __/ |_) | \__/\ (_| | |_) | |_| |_| | | |  __/ | (_) | (_) | | |")
         print("|  \/  \/ \___|_.__/ \____/\__,_| .__/ \__|\__,_|_|  \___\_/\___/ \___/|_| |")
         print("|                               | |                                        |")
-        print("|                               |_|                               v2024.08 |")
+        print("|                               |_|                               v2024.10 |")
         print("*==========================================================================*")
         return 0
     else: # if too small, print the smaller logo/startmark
@@ -40,11 +40,6 @@ def make_dir(dir_name):
         exit("Error: directory already exists.")
 
 
-# if (os.path.exists("./test")!=True):
-#    os.mkdir("./test")
-#    print("made directory")
-# else:
-#    print("directory already exists")
 def print_report(http, https, timeout, misc, extendReport):
     # print total sites done, total successes, https/http successes, and failures (total and timeout/other)
     print("\n*====================*")
@@ -75,37 +70,37 @@ def process_default_args(argv):
         exit("Error: no arguments provided.")
 
 def process_std_exceptions(LOG_FILE, e, url, timeout=None):
+    error = ""
     if timeout == True: # if timeout error, then process and return timeout
         print(f'Timeout while loading {url}: {str(e.msg)}')
         with open(LOG_FILE, 'a') as log_file:
             log_file.write(f'Timeout: {url}\n')
         return "timeout" # if timeout error
     elif 'e=nssFailure' in e.msg:
-        print(f'Error capturing screenshot for {url}: nssFailure')
-        with open(LOG_FILE, 'a') as log_file:
-            log_file.write(f'nnsFailure: {url}\n')
+        process_write_exception(LOG_FILE,url,'nssFailure')
         return "nssFailure" # if nssFailure
     elif 'e=dnsNotFound' in e.msg:
-        print(f'Error capturing screenshot for {url}: DNS not found')
-        with open(LOG_FILE, 'a') as log_file:
-            log_file.write(f'DNS not found: {url}\n')
+        process_write_exception(LOG_FILE,url,'DNS not found')
         return "dnsNotFound" # if DNS Not Found error
     elif 'e=redirectLoop' in e.msg:
-        print(f'Error capturing screenshot for {url}: Redirect Loop')
-        with open(LOG_FILE, 'a') as log_file:
-            log_file.write(f'Redirect Loop: {url}\n')
+        process_write_exception(LOG_FILE, url, 'Redirect Loop')
         return "redirect" # if redirect loop
     elif 'e=connectionFailure' in e.msg:
-        print(f'Error capturing screenshot for {url}: Connection Failed')
-        with open(LOG_FILE, 'a') as log_file:
-            log_file.write(f'Connection Failure: {url}\n')
+        process_write_exception(LOG_FILE,url,'Connection Failed')
         return "connexionfailure" # if connection failed
     else:
         print(f'Error capturing screenshot for {url}: {str(e.msg)}')
         with open(LOG_FILE, 'a') as log_file:
             log_file.write(f'Error: {url}\n')
         return "misc" # return if misc error
-
+        
+# todo: write tests for process_write_exception        
+def process_write_exception(LOG_FILE,url,er): # function to process outputting exceptions - removes 12 lines of redundant code
+    print(f'Error capturing screenshot for {url}: {er}')
+    with open(LOG_FILE, 'a') as log_file:
+        log_file.write(f'{er}: {url}\n')
+    return 0
+    
 def driver(argv): #MAIN DRIVER FUNCTION
     # set CSV_FILE_PATH using process_default_args to check for valid CSV argument
     CSV_FILE_PATH = process_default_args(argv) # process arguments
@@ -159,7 +154,7 @@ def driver(argv): #MAIN DRIVER FUNCTION
                 https += 1 # increment when success
             # if an exception occurs, try replacing https with http
             except Exception as e:
-                print(type(e))
+                #print(type(e))
                 try: # try with http, screenshot and report success if successful
                     url = url.replace("https://", "http://")
                     driver.get(url)
